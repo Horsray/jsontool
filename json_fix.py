@@ -1,8 +1,17 @@
 import json
 import subprocess
+import os
+import locale
 from tkinter import filedialog, Scrollbar
 from tkinterdnd2 import TkinterDnD, DND_FILES
 import tkinter as tk
+
+# 尝试设置中文环境，若系统未安装对应语言包则忽略
+try:
+    locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
+    os.environ["LANG"] = "zh_CN.UTF-8"
+except locale.Error:
+    pass
 
 # 解析工作流数据，整理节点名称、ID 和连接顺序
 def parse_workflow_data(workflow_data):
@@ -116,7 +125,10 @@ def print_parsed_nodes(parsed_nodes, node_map, node_output_map, output_text):
 # 打开文件选择对话框
 def load_workflow_file(output_text):
     try:
-        file_path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+        file_path = filedialog.askopenfilename(
+            title="选择工作流 JSON 文件",
+            filetypes=[("JSON 文件", "*.json")]
+        )
         if file_path:
             output_text.insert(tk.END, f"文件已选择: {file_path}\n")
             
@@ -149,7 +161,11 @@ def merge_and_save_json(merged_json_data, output_text):
             return
 
         # 打开文件选择对话框让用户选择保存路径
-        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON Files", "*.json")])
+        file_path = filedialog.asksaveasfilename(
+            title="保存合并后的 JSON",
+            defaultextension=".json",
+            filetypes=[("JSON 文件", "*.json")]
+        )
         if file_path:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(merged_json_data, f, ensure_ascii=False, indent=4)
@@ -178,10 +194,10 @@ def setup_gui():
 
         # 设置控制台文本框
         output_text = tk.Text(right_frame, wrap=tk.WORD, height=20, width=80)
-        output_text.pack(expand=True, fill=tk.BOTH)
+        output_text.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
         # 添加滚动条到右侧控制台
-        scrollbar = Scrollbar(output_text)
+        scrollbar = Scrollbar(right_frame)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         output_text.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=output_text.yview)
@@ -195,7 +211,7 @@ def setup_gui():
         merge_button.pack(pady=5)
 
         # 输入框：输入合并的 JSON 数据
-        json_input = tk.Text(left_frame, width=25, height=10)  # 增大输入框高度和宽度
+        json_input = tk.Text(left_frame, width=35, height=15)  # 增大输入框高度和宽度
         json_input.pack(pady=5)
 
         root.mainloop()
