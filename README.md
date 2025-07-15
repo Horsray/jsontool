@@ -1,0 +1,1 @@
+It's a workflow parsing and organizing tool. Users can manually upload JSON files exported through Comfyui's API, or parse JSON files obtained by users through standard prompt requests obtained by crawling tools, automatically generate mapping dictionaries, analyze the input-output relationship of workflow node IDs, and package JSON
